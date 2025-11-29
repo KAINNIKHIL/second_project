@@ -341,13 +341,17 @@ return (
           placeholder="Type your message..."
           value={newMsg}
           onChange={handleTyping}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") sendMessage();
-          }}
+         onKeyDown={async (e) => {
+          if (e.key === "Enter") {
+          e.preventDefault();
+          await sendMessage();   // ensure message send completes
+         }
+      }}
+
           className="flex-1 p-2 rounded-lg border dark:bg-gray-900 dark:text-white"
         />
         <button
-          onClick={sendMessage}
+          onClick={async () => await sendMessage()}
           className="sticky top-99 z-10 bg-pink-600 text-white px-4 py-2 rounded-lg"
         >
           Send
