@@ -6,62 +6,70 @@ import { useNavigate } from "react-router-dom";
   
 const questions = [
   {
-    question: "You feel energized by...",
+    question: "At a party, you usually...",
     options: [
-      { text: "Being around people", trait: "E" },
-      { text: "Spending time alone", trait: "I" },
+      { text: "Talk with lots of people", trait: "E" },
+      { text: "Stay with a few close people", trait: "I" },
     ],
   },
+
   {
-    question: "When solving problems, you...",
+    question: "You trust more...",
     options: [
-      { text: "Trust experience", trait: "S" },
-      { text: "Trust intuition", trait: "N" },
+      { text: "Facts and experience", trait: "S" },
+      { text: "Ideas and possibilities", trait: "N" },
     ],
   },
+
   {
-    question: "You make decisions based on...",
+    question: "When making decisions...",
     options: [
-      { text: "Logic", trait: "T" },
-      { text: "Emotions", trait: "F" },
+      { text: "You follow logic", trait: "T" },
+      { text: "You follow your heart", trait: "F" },
     ],
   },
+
   {
-    question: "You prefer to...",
+    question: "Your lifestyle is more...",
     options: [
-      { text: "Have a clear plan", trait: "J" },
-      { text: "Go with the flow", trait: "P" },
-    ],
-  },
-  {
-    question: "In social situations...",
-    options: [
-      { text: "You start conversations", trait: "E" },
-      { text: "You wait to be approached", trait: "I" },
-    ],
-  },
-  {
-    question: "You focus on...",
-    options: [
-      { text: "What is real", trait: "S" },
-      { text: "What could be", trait: "N" },
-    ],
-  },
-  {
-    question: "In a group project, you...",
-    options: [
-      { text: "Stick to logic", trait: "T" },
-      { text: "Consider people’s feelings", trait: "F" },
-    ],
-  },
-  {
-    question: "Your schedule is usually...",
-    options: [
-      { text: "Organized and set", trait: "J" },
+      { text: "Planned and organized", trait: "J" },
       { text: "Flexible and spontaneous", trait: "P" },
     ],
   },
+
+  {
+    question: "Your ideal weekend is...",
+    options: [
+      { text: "Going out and socializing", trait: "E" },
+      { text: "Relaxing alone or with close friends", trait: "I" },
+    ],
+  },
+
+  {
+    question: "You notice first...",
+    options: [
+      { text: "What’s happening now", trait: "S" },
+      { text: "What could happen next", trait: "N" },
+    ],
+  },
+
+  {
+    question: "Friends describe you as...",
+    options: [
+      { text: "Rational and objective", trait: "T" },
+      { text: "Warm and understanding", trait: "F" },
+    ],
+  },
+
+  {
+    question: "When traveling, you prefer...",
+    options: [
+      { text: "A planned itinerary", trait: "J" },
+      { text: "Exploring freely", trait: "P" },
+    ],
+  },
 ];
+
 
 export default function MBTITest() {
   const [currentQ, setCurrentQ] = useState(0);
@@ -91,31 +99,259 @@ export default function MBTITest() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto mt-10 p-6 bg-gray-700 rounded-2xl shadow-xl">
+  <div
+    className="
+      min-h-screen
+      bg-[#0b1120]
+      text-white
+      relative
+      overflow-hidden
+      flex
+      items-center
+      justify-center
+      px-4
+      py-10
+    "
+  >
+
+    {/* Glow */}
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+
+      <div
+        className="
+          absolute
+          top-[-120px]
+          left-[-100px]
+          w-[320px]
+          h-[320px]
+          bg-pink-500/20
+          blur-3xl
+          rounded-full
+        "
+      />
+
+      <div
+        className="
+          absolute
+          bottom-[-120px]
+          right-[-100px]
+          w-[320px]
+          h-[320px]
+          bg-violet-500/20
+          blur-3xl
+          rounded-full
+        "
+      />
+    </div>
+
+    {/* Card */}
+    <div
+      className="
+        relative
+        z-10
+        w-full
+        max-w-2xl
+        rounded-3xl
+        border
+        border-white/10
+        bg-white/[0.05]
+        backdrop-blur-2xl
+        p-8
+        shadow-2xl
+        shadow-pink-500/10
+      "
+    >
+
       {!result ? (
-        <div>
-          <h2 className="text-xl font-bold mb-4">Question {currentQ + 1} of {questions.length}</h2>
-          <p className="text-lg mb-6">{questions[currentQ].question}</p>
-          <div className="grid gap-4">
-            {questions[currentQ].options.map((opt, index) => (
-              <button
-                key={index}
-                onClick={() => handleAnswer(opt.trait)}
-                className="px-4 py-3 bg-gray-500 text-white rounded-xl hover:bg-pink-700 transition"
-              >
-                {opt.text}
-              </button>
-            ))}
+        <>
+          {/* Header */}
+          <div className="mb-8">
+
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold">
+                MBTI Soul Test ✨
+              </h2>
+
+              <span className="text-sm text-gray-400">
+                {currentQ + 1}/{questions.length}
+              </span>
+            </div>
+
+            {/* Progress */}
+            <div
+              className="
+                w-full
+                h-2
+                rounded-full
+                bg-white/10
+                overflow-hidden
+              "
+            >
+              <div
+                className="
+                  h-full
+                  rounded-full
+                  bg-gradient-to-r
+                  from-pink-500
+                  to-violet-500
+                  transition-all
+                  duration-500
+                "
+                style={{
+                  width: `${
+                    ((currentQ + 1) /
+                      questions.length) *
+                    100
+                  }%`,
+                }}
+              />
+            </div>
           </div>
-        </div>
+
+          {/* Question */}
+          <div className="mb-8">
+
+            <h3
+              className="
+                text-3xl
+                font-bold
+                leading-snug
+              "
+            >
+              {questions[currentQ].question}
+            </h3>
+          </div>
+
+          {/* Options */}
+          <div className="grid gap-4">
+
+            {questions[currentQ].options.map(
+              (opt, index) => (
+                <button
+                  key={index}
+                  onClick={() =>
+                    handleAnswer(opt.trait)
+                  }
+                  className="
+                    group
+                    relative
+                    overflow-hidden
+                    rounded-2xl
+                    border
+                    border-white/10
+                    bg-white/[0.05]
+                    p-5
+                    text-left
+                    transition-all
+                    duration-300
+                    hover:border-pink-500/30
+                    hover:bg-white/[0.08]
+                  "
+                >
+                  <div
+                    className="
+                      absolute
+                      inset-0
+                      opacity-0
+                      group-hover:opacity-100
+                      transition
+                      bg-gradient-to-r
+                      from-pink-500/10
+                      to-violet-500/10
+                    "
+                  />
+
+                  <span
+                    className="
+                      relative
+                      text-lg
+                      font-medium
+                    "
+                  >
+                    {opt.text}
+                  </span>
+                </button>
+              )
+            )}
+          </div>
+        </>
       ) : (
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">You are an <span className="text-pink-600">{result}</span></h2>
-          <button onClick={handleSave} className="px-6 py-3 bg-pink-600 text-white rounded-xl hover:bg-pink-700 transition">
-            Save
+
+          {/* Result */}
+          <div
+            className="
+              inline-flex
+              items-center
+              justify-center
+              w-28
+              h-28
+              rounded-full
+              bg-gradient-to-r
+              from-pink-500
+              to-violet-500
+              text-4xl
+              font-bold
+              mb-6
+              shadow-2xl
+              shadow-pink-500/20
+            "
+          >
+            {result}
+          </div>
+
+          <h2 className="text-4xl font-bold mb-4">
+            You are an{" "}
+            <span
+              className="
+                bg-gradient-to-r
+                from-pink-400
+                to-violet-400
+                bg-clip-text
+                text-transparent
+              "
+            >
+              {result}
+            </span>
+          </h2>
+
+          <p
+            className="
+              text-gray-300
+              max-w-md
+              mx-auto
+              leading-relaxed
+              mb-8
+            "
+          >
+            Your vibe reflects your personality,
+            emotions, decisions, and the way you
+            connect with souls around you.
+          </p>
+
+          {/* Save */}
+          <button
+            onClick={handleSave}
+            className="
+              px-8
+              py-4
+              rounded-2xl
+              bg-gradient-to-r
+              from-pink-500
+              to-violet-500
+              font-semibold
+              text-lg
+              hover:opacity-90
+              transition
+              shadow-xl
+              shadow-pink-500/20
+            "
+          >
+            Save Personality ✨
           </button>
         </div>
       )}
     </div>
-  );
+  </div>
+);
 }

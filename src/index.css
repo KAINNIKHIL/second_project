@@ -12,3 +12,28 @@ body,
   height: 100%;
   text-decoration: none;
 }
+
+.Toastify__toast {
+  animation: toastIn 0.35s ease;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.Toastify__progress-bar {
+  background: linear-gradient(
+    to right,
+    #ec4899,
+    #8b5cf6,
+    #06b6d4
+  );
+}

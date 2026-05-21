@@ -324,55 +324,276 @@ await createCommentNotification(receiverId, senderId, vibeId);
 
   
   return (
-    
-    <div className="max-w-3xl  mx-auto px-4 bg-white text-black dark:bg-gray-900 dark:text-white p-6 rounded-lg space-y-6">
-       <div className="flex justify-end mb-4">
-  <select
-    value={filter}
-    onChange={(e) => setFilter(e.target.value)}
-    className="p-2 rounded border bg-white text-black dark:bg-gray-800 dark:text-white"
+  <div
+    className="
+      relative
+      min-h-screen
+      overflow-hidden
+      bg-[#0b1120]
+      text-white
+    "
   >
-    <option value="all">All Vibes</option>
-    <option value="same-mbti">Soul Vibes</option>
-  </select>
-</div>
+    {/* Background Glow */}
+    <div
+      className="
+        absolute
+        inset-0
+        overflow-hidden
+        pointer-events-none
+      "
+    >
+      <div
+        className="
+          absolute
+          top-[-120px]
+          left-[-80px]
+          w-[300px]
+          h-[300px]
+          bg-pink-500/20
+          blur-3xl
+          rounded-full
+        "
+      />
 
-       <Stories currentUser={user}/>
-
-       
-
-
-      {vibes.map((vibe) => {
-      const userProfile = userProfilesMap[vibe.userId]; 
-
-      return (
-        
-        <VibeCard
-  key={vibe.$id}
-  vibe={vibe}
-  currentUserId={userId}
-  commentInput={commentInput}
-  commentsMap={commentsMap}
-  showComments={showComments}
-  handleLike={handleLike}
-  handleCommentSubmit={(e) => handleCommentSubmit(e, vibe.$id)}
-  handleCommentChange={handleCommentChange}
-  setShowComments={setShowComments}
-  commentCount={commentsCountMap[vibe.$id] || 0}
-  commentUserProfilesMap={commentUserProfilesMap}
-  userProfile={userProfile}
-  onFollow={handleFollow}
-/>
-
-      );
-    })}
-  
-      {vibes.length === 0 && (
-        <div className="flex items-center justify-center h-full py-4">
-        <div className="w-10 h-10 border-4 border-pink-600 border-t-transparent rounded-full animate-spin"></div>
-      </div>
-      )}
+      <div
+        className="
+          absolute
+          bottom-[-120px]
+          right-[-80px]
+          w-[320px]
+          h-[320px]
+          bg-violet-500/20
+          blur-3xl
+          rounded-full
+        "
+      />
     </div>
-  );
+
+    {/* Feed Container */}
+    <div
+      className="
+        relative
+        z-10
+        max-w-3xl
+        mx-auto
+        px-4
+        py-5
+      "
+    >
+      {/* Top Header */}
+      <div
+        className="
+          flex
+          items-center
+          justify-between
+          mb-5
+        "
+      >
+        <div>
+          <h1
+            className="
+              text-3xl
+              font-bold
+              bg-gradient-to-r
+              from-pink-500
+              via-violet-400
+              to-cyan-400
+              bg-clip-text
+              text-transparent
+            "
+          >
+            VibeSoul
+          </h1>
+
+          <p
+            className="
+              text-sm
+              text-gray-400
+              mt-1
+            "
+          >
+            Feel the vibe of your tribe ✨
+          </p>
+        </div>
+
+        {/* Filter */}
+        <div
+          className="
+            relative
+          "
+        >
+          <select
+            value={filter}
+            onChange={(e) =>
+              setFilter(e.target.value)
+            }
+            className="
+              appearance-none
+              px-4
+              py-2
+              rounded-2xl
+              bg-white/[0.06]
+              border
+              border-white/10
+              text-sm
+              text-white
+              backdrop-blur-xl
+              focus:outline-none
+              focus:ring-2
+              focus:ring-pink-500/30
+            "
+          >
+            <option
+              value="all"
+              className="bg-black"
+            >
+              All Vibes
+            </option>
+
+            <option
+              value="same-mbti"
+              className="bg-black"
+            >
+              Soul Vibes
+            </option>
+          </select>
+        </div>
+      </div>
+
+      {/* Stories */}
+      <div
+        className="
+          mb-6
+          rounded-3xl
+          border
+          border-white/10
+          bg-white/[0.04]
+          backdrop-blur-2xl
+          p-2
+        "
+      >
+        <Stories currentUser={user} />
+      </div>
+
+      {/* Feed */}
+      <div className="space-y-6">
+        {isLoading ? (
+
+          /* Loader */
+          <div
+            className="
+              flex
+              items-center
+              justify-center
+              py-16
+            "
+          >
+            <div
+              className="
+                w-12
+                h-12
+                rounded-full
+                border-[3px]
+                border-pink-500/30
+                border-t-pink-500
+                animate-spin
+              "
+            />
+          </div>
+
+        ) : vibes.length > 0 ? (
+
+          vibes.map((vibe) => {
+            const userProfile =
+              userProfilesMap[vibe.userId];
+
+            return (
+              <VibeCard
+                key={vibe.$id}
+                vibe={vibe}
+                currentUserId={userId}
+                commentInput={commentInput}
+                commentsMap={commentsMap}
+                showComments={showComments}
+                handleLike={handleLike}
+                handleCommentSubmit={(e) =>
+                  handleCommentSubmit(
+                    e,
+                    vibe.$id
+                  )
+                }
+                handleCommentChange={
+                  handleCommentChange
+                }
+                setShowComments={
+                  setShowComments
+                }
+                commentCount={
+                  commentsCountMap[
+                    vibe.$id
+                  ] || 0
+                }
+                commentUserProfilesMap={
+                  commentUserProfilesMap
+                }
+                userProfile={userProfile}
+                onFollow={handleFollow}
+              />
+            );
+          })
+
+        ) : (
+
+          /* Empty State */
+          <div
+            className="
+              flex
+              flex-col
+              items-center
+              justify-center
+              py-20
+              text-center
+            "
+          >
+            <div
+              className="
+                w-24
+                h-24
+                rounded-full
+                bg-gradient-to-r
+                from-pink-500/20
+                to-violet-500/20
+                blur-2xl
+                absolute
+              "
+            />
+
+            <h2
+              className="
+                relative
+                text-2xl
+                font-semibold
+              "
+            >
+              No vibes yet
+            </h2>
+
+            <p
+              className="
+                relative
+                text-gray-400
+                mt-2
+                max-w-sm
+              "
+            >
+              Follow more souls or post your
+              first vibe ✨
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+);
 };
 export default Feed;

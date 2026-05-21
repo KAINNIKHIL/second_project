@@ -4,6 +4,7 @@ import { databases,account } from "../appwrite/config";
 import { Query } from "appwrite";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { formatDistanceToNow } from "date-fns";
 
 const PublicProfile = () => {
   const { userId } = useParams();
@@ -173,81 +174,435 @@ const PublicProfile = () => {
   if (!userProfile) return <p className="text-center">User not found.</p>;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white dark:bg-gray-900 text-black dark:text-white rounded-lg">
-      
-      <div className="flex items-center gap-4 mb-6">
-        <img
-          src={userProfile.profilePicUrl || "/default-avatar.png"}
-          alt="Profile"
-          className="w-20 h-20 rounded-full object-cover border"
-        />
-        <div>
-          <h1 className="text-xl font-semibold">{userProfile.username || "VibeSoul User"}</h1>
-          {userProfile.mbtiType && (
-            <p className="text-sm text-gray-500 dark:text-gray-300">
-              MBTI: {userProfile.mbtiType.toUpperCase()}
-            </p>
+  <div
+    className="
+      relative
+      min-h-screen
+      overflow-hidden
+      bg-[#0b1120]
+      text-white
+    "
+  >
+    {/* Background Glow */}
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+
+      <div
+        className="
+          absolute
+          top-[-120px]
+          left-[-80px]
+          w-[320px]
+          h-[320px]
+          bg-pink-500/20
+          blur-3xl
+          rounded-full
+        "
+      />
+
+      <div
+        className="
+          absolute
+          bottom-[-140px]
+          right-[-100px]
+          w-[340px]
+          h-[340px]
+          bg-violet-500/20
+          blur-3xl
+          rounded-full
+        "
+      />
+    </div>
+
+    {/* Main */}
+    <div
+      className="
+        relative
+        z-10
+        max-w-4xl
+        mx-auto
+        px-4
+        py-6
+      "
+    >
+
+      {/* Profile Card */}
+      <div
+        className="
+          rounded-3xl
+          border
+          border-white/10
+          bg-white/[0.05]
+          backdrop-blur-2xl
+          p-6
+          shadow-2xl
+          shadow-pink-500/5
+        "
+      >
+
+        {/* Header */}
+        <div
+          className="
+            flex
+            flex-col
+            md:flex-row
+            md:items-center
+            md:justify-between
+            gap-6
+          "
+        >
+
+          {/* Left */}
+          <div className="flex items-center gap-5">
+
+            {/* Avatar */}
+            <div className="relative">
+
+              <div
+                className="
+                  absolute
+                  inset-0
+                  rounded-full
+                  bg-pink-500/30
+                  blur-xl
+                  scale-110
+                "
+              />
+
+              <img
+                src={
+                  userProfile.profilePicUrl ||
+                  "/default-avatar.png"
+                }
+                alt="Profile"
+                className="
+                  relative
+                  w-24
+                  h-24
+                  rounded-full
+                  object-cover
+                  border-4
+                  border-pink-500/50
+                  shadow-xl
+                "
+              />
+            </div>
+
+            {/* Info */}
+            <div>
+
+              <h1
+                className="
+                  text-2xl
+                  font-bold
+                "
+              >
+                {userProfile.username ||
+                  "VibeSoul User"}
+              </h1>
+
+              {userProfile.mbtiType && (
+                <div
+                  className="
+                    inline-flex
+                    mt-3
+                    px-3
+                    py-1
+                    rounded-full
+                    bg-pink-500/10
+                    border
+                    border-pink-500/20
+                    text-pink-300
+                    text-sm
+                    font-medium
+                  "
+                >
+                  ✨ {userProfile.mbtiType}
+                </div>
+              )}
+
+              {/* Bio */}
+              {userProfile?.bio && (
+                <p
+                  className="
+                    mt-4
+                    text-sm
+                    text-gray-300
+                    leading-relaxed
+                    max-w-md
+                  "
+                >
+                  {userProfile.bio}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Actions */}
+          {currentUserId !== targetUserId && (
+            <div className="flex gap-3">
+
+              {/* Follow */}
+              <button
+                onClick={handleFollowToggle}
+                className={`
+                  px-5
+                  py-3
+                  rounded-2xl
+                  font-medium
+                  transition-all
+                  duration-300
+
+                  ${
+                    isFollowing
+                      ? `
+                        bg-white/[0.08]
+                        border
+                        border-white/10
+                        hover:bg-white/[0.12]
+                      `
+                      : `
+                        bg-gradient-to-r
+                        from-pink-500
+                        to-violet-500
+                        shadow-lg
+                        shadow-pink-500/20
+                        hover:opacity-90
+                      `
+                  }
+                `}
+              >
+                {isFollowing
+                  ? "Following"
+                  : "Follow"}
+              </button>
+
+              {/* Message */}
+              <button
+                onClick={() =>
+                  navigate(
+                    "/chat/" +
+                    targetUserId
+                  )
+                }
+                className="
+                  px-5
+                  py-3
+                  rounded-2xl
+                  bg-white/[0.06]
+                  border
+                  border-white/10
+                  hover:bg-white/[0.08]
+                  transition
+                "
+              >
+                Message
+              </button>
+            </div>
           )}
         </div>
-        <div className="flex gap-4 mt-2 text-sm text-gray-500 dark:text-gray-300">
-  <Link to={`/profile/${targetUserId}/followers`} className="hover:underline">
-    <span className="font-semibold">{followersCount}</span> Followers
-  </Link>
-  <Link to={`/profile/${targetUserId}/following`} className="hover:underline">
-    <span className="font-semibold">{followingCount}</span> Following
-  </Link>
-</div>
 
+        {/* Stats */}
+        <div
+          className="
+            grid
+            grid-cols-3
+            gap-4
+            mt-8
+          "
+        >
+
+          {/* Vibes */}
+          <div
+            className="
+              rounded-2xl
+              bg-white/[0.04]
+              border
+              border-white/10
+              p-4
+              text-center
+            "
+          >
+            <h2 className="text-2xl font-bold">
+              {vibes.length}
+            </h2>
+
+            <p className="text-gray-400 text-sm">
+              Vibes
+            </p>
+          </div>
+
+          {/* Followers */}
+          <Link
+            to={`/profile/${targetUserId}/followers`}
+            className="
+              rounded-2xl
+              bg-white/[0.04]
+              border
+              border-white/10
+              p-4
+              text-center
+              hover:bg-white/[0.06]
+              transition
+            "
+          >
+            <h2 className="text-2xl font-bold">
+              {followersCount}
+            </h2>
+
+            <p className="text-gray-400 text-sm">
+              Followers
+            </p>
+          </Link>
+
+          {/* Following */}
+          <Link
+            to={`/profile/${targetUserId}/following`}
+            className="
+              rounded-2xl
+              bg-white/[0.04]
+              border
+              border-white/10
+              p-4
+              text-center
+              hover:bg-white/[0.06]
+              transition
+            "
+          >
+            <h2 className="text-2xl font-bold">
+              {followingCount}
+            </h2>
+
+            <p className="text-gray-400 text-sm">
+              Following
+            </p>
+          </Link>
+        </div>
       </div>
-      {currentUserId !== targetUserId && (
-  <button
-    className={`px-4 py-2 rounded-lg text-sm font-medium ${
-      isFollowing ? "bg-gray-400 text-white" : "bg-pink-600 text-white"
-    }`}
-    onClick={handleFollowToggle}
-  >
-    {isFollowing ? "Unfollow" : "Follow"}
-  </button>
-)}
-{currentUserId !== targetUserId && (
-  <button
-    className={"mx-4 px-4 py-2 rounded-lg text-sm font-medium bg-pink-600 text-white"}
-    onClick={() => navigate("/chat/" + targetUserId)}
-  >
-    MESSAGE
-  </button>
-)}
 
-      {userProfile?.bio && (
-  <h2 className="mt-2 text-sm text-gray-600 dark:text-gray-400 italic">
-    {userProfile.bio}
-  </h2>
-)}
       {/* Vibes */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 ">
-      <h1 className="text-xl font-semibold">Vibes: {vibes.length}</h1>
+      <div className="mt-8">
+
+        {/* Title */}
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            mb-5
+          "
+        >
+          <h2
+            className="
+              text-2xl
+              font-bold
+            "
+          >
+            Vibes ✨
+          </h2>
+
+          <p className="text-sm text-gray-400">
+            {vibes.length} posts
+          </p>
+        </div>
+
         {vibes.length === 0 ? (
-          <p>This user hasn’t posted any vibes yet.</p>
+
+          <div
+            className="
+              rounded-3xl
+              bg-white/[0.04]
+              border
+              border-white/10
+              p-10
+              text-center
+              text-gray-400
+            "
+          >
+            This soul hasn’t posted any vibes yet.
+          </div>
+
         ) : (
-          vibes.map((vibe) => (
-            <div key={vibe.$id} className="p-4 border dark:border-gray-700 rounded-lg">
-              <p>{vibe.vibeText}</p>
-              {vibe.imageUrl && (
-        <img
-          src={vibe.imageUrl}
-          alt="vibe-img"
-          className="mt-4 rounded-xl max-h-80 w-full border border-white/10"
-        />
-      )}
-              <span className="text-sm text-gray-500">
-                {new Date(vibe.$createdAt).toLocaleString()}
-              </span>
-            </div>
-          ))
+
+          <div
+            className="
+              grid
+              grid-cols-1
+              sm:grid-cols-2
+              lg:grid-cols-3
+              gap-5
+            "
+          >
+            {vibes.map((vibe) => (
+              <div
+                key={vibe.$id}
+                className="
+                  group
+                  rounded-3xl
+                  overflow-hidden
+                  bg-white/[0.05]
+                  border
+                  border-white/10
+                  hover:border-pink-500/30
+                  transition-all
+                  duration-300
+                "
+              >
+
+                {/* Image */}
+                {vibe.imageUrl && (
+                  <div className="overflow-hidden">
+                    <img
+                      src={vibe.imageUrl}
+                      alt="vibe-img"
+                      className="
+                        h-72
+                        w-full
+                        object-cover
+                        group-hover:scale-105
+                        transition-transform
+                        duration-500
+                      "
+                    />
+                  </div>
+                )}
+
+                {/* Content */}
+                <div className="p-4">
+
+                  <p
+                    className="
+                      text-sm
+                      text-gray-200
+                      line-clamp-3
+                    "
+                  >
+                    {vibe.vibeText}
+                  </p>
+
+                  <span
+                    className="
+                      text-xs
+                      text-gray-500
+                      block
+                      mt-3
+                    "
+                  >
+                    {formatDistanceToNow(
+  new Date(vibe.$createdAt),
+  {
+    addSuffix: true,
+  }
+)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default PublicProfile;

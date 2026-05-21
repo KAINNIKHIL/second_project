@@ -73,47 +73,255 @@ export default function ChatList() {
   
 
   return (
-    <div className="max-w-3xl mx-auto p-4 bg-white text-black dark:bg-gray-900 dark:text-white">
-      <h2 className="text-2xl font-bold mb-4">Chats</h2>
-      <div className="space-y-4">
-        {chats.length === 0 ? (
-          <div className="flex items-center justify-center h-full py-4">
-          <div className="w-10 h-10 border-4 border-pink-600 border-t-transparent rounded-full animate-spin"></div>
+  <div
+    className="
+      min-h-screen
+      bg-[#0b1120]
+      text-white
+      relative
+      overflow-hidden
+      px-4
+      py-8
+    "
+  >
+    {/* Background Glow */}
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+
+      <div
+        className="
+          absolute
+          top-[-120px]
+          left-[-80px]
+          w-[300px]
+          h-[300px]
+          bg-pink-500/20
+          blur-3xl
+          rounded-full
+        "
+      />
+
+      <div
+        className="
+          absolute
+          bottom-[-120px]
+          right-[-80px]
+          w-[320px]
+          h-[320px]
+          bg-violet-500/20
+          blur-3xl
+          rounded-full
+        "
+      />
+    </div>
+
+    <div
+      className="
+        relative
+        z-10
+        max-w-3xl
+        mx-auto
+      "
+    >
+      {/* Header */}
+      <div
+        className="
+          flex
+          items-center
+          justify-between
+          mb-8
+        "
+      >
+        <div>
+          <h1 className="text-3xl font-bold">
+            Chats ✨
+          </h1>
+
+          <p className="text-sm text-gray-400 mt-1">
+            Connect with your vibe circle
+          </p>
         </div>
-        ) : (
-          chats.map((chat) => {
-            const otherUserId = chat.participants.find((id) => id !== userId);
-            
-            
-            // Ensure we have the user data
-            const otherUser = users[otherUserId];
-            
+
+        <div
+          className="
+            px-4
+            py-2
+            rounded-2xl
+            bg-white/[0.05]
+            border
+            border-white/10
+            text-sm
+            text-gray-300
+          "
+        >
+          {chats.length} Chats
+        </div>
+      </div>
+
+      {/* Loading / Empty */}
+      {chats.length === 0 ? (
+        <div
+          className="
+            rounded-3xl
+            border
+            border-white/10
+            bg-white/[0.04]
+            backdrop-blur-xl
+            p-12
+            text-center
+          "
+        >
+          <div className="text-5xl mb-4">
+            💬
+          </div>
+
+          <h2 className="text-xl font-semibold">
+            No Chats Yet
+          </h2>
+
+          <p className="text-gray-400 mt-2 text-sm">
+            Start connecting with other souls.
+          </p>
+        </div>
+      ) : (
+
+        /* Chat List */
+        <div className="space-y-4">
+          {chats.map((chat) => {
+
+            const otherUserId =
+              chat.participants.find(
+                (id) => id !== userId
+              );
+
+            const otherUser =
+              users[otherUserId];
 
             return (
               <div
                 key={chat.$id}
-                onClick={() => navigate(`/chat/${otherUserId}`)}
-                className="flex items-center justify-between dark:bg-gray-800 bg-white p-3 rounded-xl shadow hover:bg-gray-700 transition"
+                onClick={() =>
+                  navigate(`/chat/${otherUserId}`)
+                }
+                className="
+                  group
+                  flex
+                  items-center
+                  justify-between
+                  rounded-3xl
+                  border
+                  border-white/10
+                  bg-white/[0.05]
+                  backdrop-blur-xl
+                  p-4
+                  hover:border-pink-500/30
+                  hover:bg-white/[0.07]
+                  transition-all
+                  duration-300
+                  cursor-pointer
+                "
               >
-                <div className="flex items-center gap-3">
-                  <img
-                    src={otherUser?.profilePicUrl}
-                    alt={otherUserId}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
+                {/* Left */}
+                <div className="flex items-center gap-4">
+
+                  {/* Avatar */}
+                  <div className="relative">
+
+                    <div
+                      className="
+                        absolute
+                        inset-0
+                        rounded-full
+                        bg-pink-500/20
+                        blur-lg
+                        scale-110
+                      "
+                    />
+
+                    <img
+                      src={
+                        otherUser?.profilePicUrl ||
+                        "/default-avatar.png"
+                      }
+                      alt={otherUserId}
+                      className="
+                        relative
+                        w-14
+                        h-14
+                        rounded-full
+                        object-cover
+                        border-2
+                        border-pink-500/40
+                      "
+                    />
+                  </div>
+
+                  {/* User Info */}
                   <div>
-                    <h3 className="font-semibold">{otherUser?.username || otherUserId}</h3>
-                    <p className="text-sm text-gray-500">{chat.lastMessage}</p>
+                    <h2
+                      className="
+                        font-semibold
+                        text-lg
+                        group-hover:text-pink-300
+                        transition
+                      "
+                    >
+                      {otherUser?.username ||
+                        "VibeSoul User"}
+                    </h2>
+
+                    <p
+                      className="
+                        text-sm
+                        text-gray-400
+                        mt-1
+                        max-w-[200px]
+                        truncate
+                      "
+                    >
+                      {chat.lastMessage ||
+                        "Start chatting ✨"}
+                    </p>
                   </div>
                 </div>
-                <span className="text-xs text-gray-400">
-                  {formatTimestamp(chat.timestamp)}
-                </span>
+
+                {/* Time */}
+                <div
+                  className="
+                    flex
+                    flex-col
+                    items-end
+                    gap-2
+                  "
+                >
+                  <span
+                    className="
+                      text-xs
+                      text-gray-500
+                    "
+                  >
+                    {formatTimestamp(
+                      chat.timestamp
+                    )}
+                  </span>
+
+                  {/* Online Dot UI */}
+                  <div
+                    className="
+                      w-2.5
+                      h-2.5
+                      rounded-full
+                      bg-green-400
+                      shadow-lg
+                      shadow-green-400/50
+                    "
+                  />
+                </div>
               </div>
             );
-          })
-        )}
-      </div>
+          })}
+        </div>
+      )}
     </div>
-  );
+  </div>
+);
 }

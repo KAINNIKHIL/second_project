@@ -50,7 +50,36 @@ function AppContent() {
           <Route path="/chatlist" element={<PrivateRoute><ChatList /></PrivateRoute>} />
         </Routes>
 
-        <ToastContainer />
+        <ToastContainer
+  position="top-center"
+  autoClose={2500}
+  hideProgressBar={false}
+  newestOnTop
+  closeOnClick
+  pauseOnHover
+  draggable
+  theme="dark"
+  toastClassName={() =>
+    `
+      relative
+      flex
+      p-1
+      min-h-10
+      rounded-2xl
+      justify-between
+      overflow-hidden
+      cursor-pointer
+      backdrop-blur-xl
+      bg-white/10
+      border
+      border-white/10
+      shadow-2xl
+    `
+  }
+  bodyClassName={() =>
+    "text-sm font-medium text-white px-3 py-2"
+  }
+/>
       </div>
     </>
   );

@@ -137,84 +137,302 @@ useEffect(() => {
 
 
   return (
-    <div className="max-w-xl mx-auto mt-7 p-6 bg-white dark:bg-gray-900 text-black dark:text-white rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Edit Profile</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+  <div
+    className="
+      min-h-screen
+      bg-[#0b1120]
+      text-white
+      relative
+      overflow-hidden
+      px-4
+      py-10
+    "
+  >
+    {/* Background Glow */}
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div
+        className="
+          absolute
+          top-[-120px]
+          left-[-80px]
+          w-[320px]
+          h-[320px]
+          rounded-full
+          bg-pink-500/20
+          blur-3xl
+        "
+      />
+
+      <div
+        className="
+          absolute
+          bottom-[-120px]
+          right-[-80px]
+          w-[320px]
+          h-[320px]
+          rounded-full
+          bg-violet-500/20
+          blur-3xl
+        "
+      />
+    </div>
+
+    {/* Card */}
+    <div
+      className="
+        relative
+        z-10
+        max-w-2xl
+        mx-auto
+        rounded-3xl
+        border
+        border-white/10
+        bg-white/[0.05]
+        backdrop-blur-2xl
+        shadow-2xl
+        shadow-pink-500/10
+        p-8
+      "
+    >
+      {/* Heading */}
+      <div className="mb-8">
+        <h2 className="text-3xl font-bold">
+          Edit Profile ✨
+        </h2>
+
+        <p className="text-sm text-gray-400 mt-2">
+          Customize your vibe identity
+        </p>
+      </div>
+
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-6"
+      >
+
+        {/* Profile Preview */}
+        <div className="flex justify-center">
+          <div className="relative">
+
+            <div
+              className="
+                absolute
+                inset-0
+                rounded-full
+                bg-pink-500/30
+                blur-xl
+                scale-110
+              "
+            />
+
+            <img
+              src={
+                formData.profilePicUrl ||
+                "/default-avatar.png"
+              }
+              alt="Profile"
+              className="
+                relative
+                w-28
+                h-28
+                rounded-full
+                object-cover
+                border-4
+                border-pink-500/40
+              "
+            />
+          </div>
+        </div>
+
+        {/* Username */}
         <div>
-          <label className="block text-sm font-medium mb-1">Username</label>
+          <label className="block mb-2 text-sm text-gray-300">
+            Username
+          </label>
+
           <input
             type="text"
             name="username"
             value={formData.username}
             onChange={handleInputChange}
-            className="w-full p-2 border rounded bg-gray-100 dark:bg-gray-800"
+            placeholder="Enter username"
+            className="
+              w-full
+              rounded-2xl
+              border
+              border-white/10
+              bg-white/[0.05]
+              px-4
+              py-3
+              outline-none
+              focus:border-pink-500/40
+              transition
+            "
           />
         </div>
+
+        {/* MBTI */}
         <div>
-  <label className="block text-sm font-medium mb-1">MBTI Type</label>
-  <div className="flex items-center gap-3">
-    <input
-      type="text"
-      name="mbtiType"
-      value={mbti || formData.mbtiType}
-      onChange={(e) => {
-        const value = e.target.value.toUpperCase().slice(0, 4);
-        setFormData({ ...formData, mbtiType: value });
-      }}
-      placeholder="e.g., INFJ"
-      className="w-full p-2 border rounded bg-gray-100 dark:bg-gray-800"
-    />
-    <button
-      type="button"
-      onClick={() => navigate("/mbti-test")}
-      className="text-white bg-pink-600 hover:bg-pink-700 text-sm px-3 py-3 rounded shadow transition duration-200"
-    >
-      <b>Test</b>
-    </button>
-  </div>
-</div>
+          <label className="block mb-2 text-sm text-gray-300">
+            MBTI Type
+          </label>
 
-        <label className="block text-sm font-medium mb-1">Bio</label>
-        <textarea
-          value={formData.bio}
-          onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-          placeholder="Write something about yourself..."
-          className="w-full mt-2 p-2 rounded border dark:bg-gray-800"
-        />
+          <div className="flex gap-3">
+            <input
+              type="text"
+              name="mbtiType"
+              value={mbti || formData.mbtiType}
+              onChange={(e) => {
+                const value = e.target.value
+                  .toUpperCase()
+                  .slice(0, 4);
 
-        <div>
-          <label className="block text-sm font-medium mb-1">Profile Picture</label>
-          <input type="file" onChange={handleFileChange} />
-          {isUploading && (
-  <div className="text-sm text-indigo-600 animate-pulse">Uploading...</div>
-)}
-
-          {formData.profilePicUrl && (
-            <img
-              src={formData.profilePicUrl}
-              alt="Profile"
-              className="mt-2 w-20 h-20 rounded-full object-cover"
+                setFormData({
+                  ...formData,
+                  mbtiType: value,
+                });
+              }}
+              placeholder="INFJ"
+              className="
+                flex-1
+                rounded-2xl
+                border
+                border-white/10
+                bg-white/[0.05]
+                px-4
+                py-3
+                outline-none
+                focus:border-pink-500/40
+              "
             />
+
+            <button
+              type="button"
+              onClick={() =>
+                navigate("/mbti-test")
+              }
+              className="
+                px-5
+                py-3
+                rounded-2xl
+                bg-gradient-to-r
+                from-pink-500
+                to-violet-500
+                font-medium
+                hover:opacity-90
+                transition
+              "
+            >
+              Test
+            </button>
+          </div>
+        </div>
+
+        {/* Bio */}
+        <div>
+          <label className="block mb-2 text-sm text-gray-300">
+            Bio
+          </label>
+
+          <textarea
+            value={formData.bio}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                bio: e.target.value,
+              })
+            }
+            placeholder="Write something about yourself..."
+            className="
+              w-full
+              min-h-[120px]
+              rounded-2xl
+              border
+              border-white/10
+              bg-white/[0.05]
+              px-4
+              py-3
+              outline-none
+              resize-none
+              focus:border-pink-500/40
+            "
+          />
+        </div>
+
+        {/* Profile Upload */}
+        <div>
+          <label className="block mb-2 text-sm text-gray-300">
+            Profile Picture
+          </label>
+
+          <input
+            type="file"
+            onChange={handleFileChange}
+            className="
+              w-full
+              text-sm
+              file:mr-4
+              file:px-4
+              file:py-2
+              file:rounded-xl
+              file:border-0
+              file:bg-pink-500
+              file:text-white
+              file:cursor-pointer
+              file:hover:bg-pink-600
+            "
+          />
+
+          {isUploading && (
+            <p className="mt-3 text-sm text-pink-300 animate-pulse">
+              Uploading...
+            </p>
           )}
         </div>
-        <div className="flex items-center justify-between mt-4">
-        <button
-          type="submit"
-          className="px-4 py-2 bg-pink-600 text-white rounded hover:bg-pink-700"
-        >
-          Update
-        </button>
-        <button
-      type="button"
-      onClick={handleLogout}
-      className="text-white bg-pink-600 hover:bg-pink-700 text-sm px-3 py-3 rounded shadow transition duration-200"
-    >
-      Logout
-    </button>
-    </div>
+
+        {/* Buttons */}
+        <div className="flex gap-4 pt-4">
+
+          {/* Update */}
+          <button
+            type="submit"
+            className="
+              flex-1
+              py-3
+              rounded-2xl
+              bg-gradient-to-r
+              from-pink-500
+              to-violet-500
+              font-semibold
+              hover:opacity-90
+              transition
+            "
+          >
+            Update Profile
+          </button>
+
+          {/* Logout */}
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="
+              px-6
+              py-3
+              rounded-2xl
+              border
+              border-white/10
+              bg-white/[0.05]
+              hover:bg-white/[0.08]
+              transition
+            "
+          >
+            Logout
+          </button>
+        </div>
       </form>
     </div>
-  );
+  </div>
+);
 };
 
 export default EditProfile;

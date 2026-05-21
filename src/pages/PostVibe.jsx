@@ -47,45 +47,230 @@ const PostVibe = () => {
     setLoading(false);
   };
 
-  return (
-    <div className="max-w-3xl  mx-auto px-4 min-h-screen bg-white dark:bg-gray-900 flex items-center justify-center p-4">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-lg bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-6 space-y-6"
-      >
-        <h2 className="text-2xl font-bold text-center text-gray-900 dark:text-white">✨ Share Your Vibe</h2>
+ return (
+  <div
+    className="
+      min-h-screen
+      bg-[#0b1120]
+      text-white
+      relative
+      overflow-hidden
+      flex
+      items-center
+      justify-center
+      px-4
+      py-10
+    "
+  >
+
+    {/* Background Glow */}
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+
+      <div
+        className="
+          absolute
+          top-[-120px]
+          left-[-100px]
+          w-[320px]
+          h-[320px]
+          rounded-full
+          bg-pink-500/20
+          blur-3xl
+        "
+      />
+
+      <div
+        className="
+          absolute
+          bottom-[-120px]
+          right-[-100px]
+          w-[320px]
+          h-[320px]
+          rounded-full
+          bg-violet-500/20
+          blur-3xl
+        "
+      />
+    </div>
+
+    {/* Main Card */}
+    <form
+      onSubmit={handleSubmit}
+      className="
+        relative
+        z-10
+        w-full
+        max-w-2xl
+        rounded-3xl
+        border
+        border-white/10
+        bg-white/[0.05]
+        backdrop-blur-2xl
+        shadow-2xl
+        shadow-pink-500/10
+        p-8
+        space-y-6
+      "
+    >
+
+      {/* Heading */}
+      <div className="text-center">
+
+        <h2
+          className="
+            text-4xl
+            font-bold
+            bg-gradient-to-r
+            from-pink-400
+            to-violet-400
+            bg-clip-text
+            text-transparent
+          "
+        >
+          Share Your Vibe ✨
+        </h2>
+
+        <p className="text-gray-400 mt-3">
+          Express your thoughts, emotions, and energy.
+        </p>
+      </div>
+
+      {/* Textarea */}
+      <div>
 
         <textarea
           value={vibe}
-          onChange={(e) => setVibe(e.target.value)}
-          rows="4"
-          placeholder="What's on your soul today?"
-          className="w-full p-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500"
+          onChange={(e) =>
+            setVibe(e.target.value)
+          }
+          rows="5"
+          placeholder="What’s on your soul today?"
+          className="
+            w-full
+            rounded-3xl
+            border
+            border-white/10
+            bg-white/[0.05]
+            p-5
+            text-white
+            placeholder:text-gray-500
+            outline-none
+            resize-none
+            focus:border-pink-500/40
+            transition
+          "
           required
         />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Add an image (optional)
-          </label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setImage(e.target.files[0])}
-            className="block w-full text-sm text-gray-900 dark:text-gray-100 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-pink-600 file:text-white hover:file:bg-pink-700"
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-pink-600 hover:bg-pink-700 text-white font-semibold py-2 px-4 rounded-xl transition"
+        <div
+          className="
+            flex
+            justify-end
+            mt-2
+            text-xs
+            text-gray-500
+          "
         >
-          {loading ? "Posting..." : "🚀 Post Vibe"}
-        </button>
-      </form>
-    </div>
-  );
+          {vibe.length}/500
+        </div>
+      </div>
+
+      {/* Image Upload */}
+      <div
+        className="
+          rounded-3xl
+          border
+          border-dashed
+          border-white/10
+          bg-white/[0.03]
+          p-6
+        "
+      >
+
+        <label
+          className="
+            block
+            text-sm
+            text-gray-300
+            mb-4
+          "
+        >
+          Add an image (optional)
+        </label>
+
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) =>
+            setImage(e.target.files[0])
+          }
+          className="
+            w-full
+            text-sm
+            text-gray-300
+
+            file:mr-4
+            file:px-5
+            file:py-3
+            file:rounded-2xl
+            file:border-0
+            file:bg-gradient-to-r
+            file:from-pink-500
+            file:to-violet-500
+            file:text-white
+            file:font-medium
+            file:cursor-pointer
+          "
+        />
+
+        {/* Preview */}
+        {image && (
+          <div className="mt-6">
+
+            <img
+              src={URL.createObjectURL(image)}
+              alt="preview"
+              className="
+                w-full
+                max-h-[400px]
+                object-cover
+                rounded-3xl
+                border
+                border-white/10
+              "
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Button */}
+      <button
+        type="submit"
+        disabled={loading}
+        className="
+          w-full
+          py-4
+          rounded-2xl
+          bg-gradient-to-r
+          from-pink-500
+          to-violet-500
+          text-lg
+          font-semibold
+          shadow-xl
+          shadow-pink-500/20
+          hover:opacity-90
+          transition-all
+          duration-300
+          disabled:opacity-50
+        "
+      >
+        {loading
+          ? "Posting..."
+          : " Post Vibe"}
+      </button>
+    </form>
+  </div>
+);
 };
 
 export default PostVibe;

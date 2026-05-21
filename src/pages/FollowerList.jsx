@@ -49,30 +49,255 @@ const FollowerList = () => {
 
   if (followers.length === 0) return <p className="text-center">No followers yet.</p>;
 
-  return (
-    <div className="max-w-3xl mx-auto p-6 bg-white dark:bg-gray-900 text-black dark:text-white rounded-lg">
-      <h1 className="text-2xl font-semibold mb-4">Followers</h1>
-      <ul className="space-y-4">
-        {followers.map((follower) => (
-          <li key={follower.$id} className="flex items-center gap-4 border p-3 rounded-lg dark:border-gray-700">
-            <img
-              src={follower.profilePicUrl || "/default-avatar.png"}
-              alt="Follower"
-              className="w-12 h-12 rounded-full object-cover border"
-            />
-            <div>
-              <Link to={`/profile/${follower.userId}`} className="font-medium hover:underline">
-                {follower.username || "VibeSoul User"}
-              </Link>
-              {follower.mbtiType && (
-                <p className="text-sm text-gray-500">MBTI: {follower.mbtiType.toUpperCase()}</p>
-              )}
-            </div>
-          </li>
-        ))}
-      </ul>
+return (
+  <div
+    className="
+      min-h-screen
+      bg-[#0b1120]
+      text-white
+      relative
+      overflow-hidden
+      px-4
+      py-8
+    "
+  >
+    {/* Glow Background */}
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      <div
+        className="
+          absolute
+          top-[-120px]
+          left-[-80px]
+          w-[300px]
+          h-[300px]
+          bg-pink-500/20
+          blur-3xl
+          rounded-full
+        "
+      />
+
+      <div
+        className="
+          absolute
+          bottom-[-120px]
+          right-[-80px]
+          w-[320px]
+          h-[320px]
+          bg-violet-500/20
+          blur-3xl
+          rounded-full
+        "
+      />
     </div>
-  );
+
+    <div
+      className="
+        relative
+        z-10
+        max-w-3xl
+        mx-auto
+      "
+    >
+      {/* Header */}
+      <div
+        className="
+          flex
+          items-center
+          justify-between
+          mb-8
+        "
+      >
+        <div>
+          <h1 className="text-3xl font-bold">
+            Followers ✨
+          </h1>
+
+          <p className="text-sm text-gray-400 mt-1">
+            Souls following this user
+          </p>
+        </div>
+
+        <div
+          className="
+            px-4
+            py-2
+            rounded-2xl
+            bg-white/[0.05]
+            border
+            border-white/10
+            text-sm
+            text-gray-300
+          "
+        >
+          {followers.length} Followers
+        </div>
+      </div>
+
+      {/* Loading */}
+      {loading ? (
+        <div className="flex items-center justify-center py-20">
+          <div
+            className="
+              w-12
+              h-12
+              border-4
+              border-pink-500
+              border-t-transparent
+              rounded-full
+              animate-spin
+            "
+          />
+        </div>
+      ) : followers.length === 0 ? (
+
+        /* Empty State */
+        <div
+          className="
+            rounded-3xl
+            border
+            border-white/10
+            bg-white/[0.04]
+            backdrop-blur-xl
+            p-12
+            text-center
+          "
+        >
+          <div className="text-5xl mb-4">
+            🫧
+          </div>
+
+          <h2 className="text-xl font-semibold">
+            No Followers Yet
+          </h2>
+
+          <p className="text-gray-400 mt-2 text-sm">
+            This soul hasn’t gained followers yet.
+          </p>
+        </div>
+
+      ) : (
+
+        /* Followers List */
+        <div className="space-y-4">
+          {followers.map((follower) => (
+            <div
+              key={follower.$id}
+              className="
+                group
+                flex
+                items-center
+                justify-between
+                rounded-3xl
+                border
+                border-white/10
+                bg-white/[0.05]
+                backdrop-blur-xl
+                p-4
+                hover:border-pink-500/30
+                hover:bg-white/[0.07]
+                transition-all
+                duration-300
+              "
+            >
+              {/* Left */}
+              <Link
+                to={`/profile/${follower.userId}`}
+                className="flex items-center gap-4"
+              >
+                {/* Avatar */}
+                <div className="relative">
+                  <div
+                    className="
+                      absolute
+                      inset-0
+                      rounded-full
+                      bg-pink-500/20
+                      blur-lg
+                      scale-110
+                    "
+                  />
+
+                  <img
+                    src={
+                      follower.profilePicUrl ||
+                      "/default-avatar.png"
+                    }
+                    alt="Follower"
+                    className="
+                      relative
+                      w-16
+                      h-16
+                      rounded-full
+                      object-cover
+                      border-2
+                      border-pink-500/40
+                    "
+                  />
+                </div>
+
+                {/* Info */}
+                <div>
+                  <h2
+                    className="
+                      font-semibold
+                      text-lg
+                      group-hover:text-pink-300
+                      transition
+                    "
+                  >
+                    {follower.username ||
+                      "VibeSoul User"}
+                  </h2>
+
+                  {follower.mbtiType && (
+                    <div
+                      className="
+                        inline-flex
+                        mt-2
+                        px-3
+                        py-1
+                        rounded-full
+                        bg-pink-500/10
+                        border
+                        border-pink-500/20
+                        text-pink-300
+                        text-xs
+                        font-medium
+                      "
+                    >
+                      ✨ {follower.mbtiType.toUpperCase()}
+                    </div>
+                  )}
+                </div>
+              </Link>
+
+              {/* View Button */}
+              <Link
+                to={`/profile/${follower.userId}`}
+                className="
+                  px-4
+                  py-2
+                  rounded-2xl
+                  bg-gradient-to-r
+                  from-pink-500
+                  to-violet-500
+                  text-sm
+                  font-medium
+                  shadow-lg
+                  shadow-pink-500/20
+                  hover:opacity-90
+                  transition
+                "
+              >
+                View
+              </Link>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  </div>
+);
 };
 
 export default FollowerList;
