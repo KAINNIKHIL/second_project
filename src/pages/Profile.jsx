@@ -494,7 +494,7 @@ const UserProfile = () => {
           </h2>
 
           <p className="text-gray-400 text-sm">
-            {vibes.length} posts
+            {vibes.length} vibes
           </p>
         </div>
 

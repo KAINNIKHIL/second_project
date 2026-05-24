@@ -596,7 +596,7 @@ const PublicProfile = () => {
           </h2>
 
           <p className="text-sm text-gray-400">
-            {vibes.length} posts
+            {vibes.length} vibes
           </p>
         </div>
 
