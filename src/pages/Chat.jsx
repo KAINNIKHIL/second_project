@@ -225,7 +225,7 @@ const Chat = () => {
 
         setMessages(res.documents);
 
-        // Mark as Read
+        // Mark Read
         const unreadMessages =
           res.documents.filter(
             (msg) =>
@@ -260,7 +260,7 @@ const Chat = () => {
 
     fetchMessages();
 
-    // Realtime Subscription
+    // Realtime
     const unsubscribe =
       client.subscribe(
         `databases.${
@@ -338,11 +338,22 @@ const Chat = () => {
 
   // Auto Scroll
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView(
-      {
-        behavior: "smooth",
-      }
-    );
+    const timeout =
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView(
+          {
+            behavior:
+              messages.length > 1
+                ? "smooth"
+                : "auto",
+
+            block: "end",
+          }
+        );
+      }, 50);
+
+    return () =>
+      clearTimeout(timeout);
   }, [messages]);
 
   // Cleanup Typing
@@ -475,324 +486,329 @@ const Chat = () => {
     }
   };
 
-  // Loading
+  // Loading UI
   if (loading) {
-    if (loading) {
-  return (
-    <div className="h-[100dvh] bg-[#0b1120] text-white flex flex-col overflow-hidden">
+    return (
+      <div className="h-[100dvh] bg-[#0b1120] text-white flex flex-col overflow-hidden">
 
-      {/* HEADER (centered like real UI) */}
-      <div className="shrink-0 sticky top-0 z-20 border-b border-white/10 px-4 py-3">
-        <div className="max-w-3xl mx-auto flex items-center gap-3 animate-pulse">
+        {/* Header */}
+        <div className="shrink-0 sticky top-0 z-20 border-b border-white/10 px-4 py-3">
+          <div className="max-w-3xl mx-auto flex items-center gap-3 animate-pulse">
 
-          <div className="w-10 h-10 rounded-full bg-white/10" />
+            <div className="w-10 h-10 rounded-full bg-white/10" />
 
-          <div>
-            <div className="w-28 h-3 bg-white/10 rounded mb-2" />
-            <div className="w-16 h-2 bg-white/10 rounded" />
-          </div>
-
-        </div>
-      </div>
-
-      {/* MESSAGES (CENTER FIXED) */}
-      <div className="flex-1 overflow-y-auto px-4 py-5">
-        <div className="max-w-3xl mx-auto space-y-3">
-
-          {[...Array(6)].map((_, i) => (
-            <div
-              key={i}
-              className={`flex ${
-                i % 2 === 0 ? "justify-end" : "justify-start"
-              }`}
-            >
-              <div
-                className={`
-                  animate-pulse
-                  p-3
-                  rounded-2xl
-                  max-w-[75%]
-                  ${
-                    i % 2 === 0
-                      ? "bg-pink-500/20"
-                      : "bg-white/10"
-                  }
-                `}
-              >
-                <div className="h-3 w-40 bg-white/10 rounded mb-2" />
-                <div className="h-3 w-24 bg-white/10 rounded" />
-              </div>
+            <div>
+              <div className="w-28 h-3 bg-white/10 rounded mb-2" />
+              <div className="w-16 h-2 bg-white/10 rounded" />
             </div>
-          ))}
 
+          </div>
         </div>
-      </div>
 
-      {/* INPUT (centered like real UI) */}
-      <div className="shrink-0 border-t border-white/10 px-4 py-4">
-        <div className="max-w-3xl mx-auto flex gap-3 animate-pulse">
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto overscroll-contain px-4 pt-5 pb-3">
+          <div className="max-w-3xl mx-auto space-y-3">
 
-          <div className="flex-1 h-11 rounded-full bg-white/10" />
-          <div className="w-11 h-11 rounded-full bg-white/10" />
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className={`flex ${
+                  i % 2 === 0
+                    ? "justify-end"
+                    : "justify-start"
+                }`}
+              >
+                <div
+                  className={`
+                    animate-pulse
+                    p-3
+                    rounded-2xl
+                    max-w-[75%]
+                    ${
+                      i % 2 === 0
+                        ? "bg-pink-500/20"
+                        : "bg-white/10"
+                    }
+                  `}
+                >
+                  <div className="h-3 w-40 bg-white/10 rounded mb-2" />
+                  <div className="h-3 w-24 bg-white/10 rounded" />
+                </div>
+              </div>
+            ))}
 
+          </div>
         </div>
-      </div>
 
-    </div>
-  );
-}
+        {/* Input */}
+        <div className="shrink-0 border-t border-white/10 px-4 py-4">
+          <div className="max-w-3xl mx-auto flex gap-2 animate-pulse">
+
+            <div className="flex-1 h-11 rounded-full bg-white/10" />
+            <div className="w-11 h-11 rounded-full bg-white/10" />
+
+          </div>
+        </div>
+
+      </div>
+    );
   }
 
   return (
-  <div
-    className="
-      h-[100dvh]
-      bg-white
-      dark:bg-gray-900
-      text-black
-      dark:text-white
-      flex
-      flex-col
-      overflow-hidden
-    "
-  >
-    {/* HEADER */}
-    {receiverProfile && (
+    <div
+      className="
+        h-[100dvh]
+        bg-white
+        dark:bg-gray-900
+        text-black
+        dark:text-white
+        flex
+        flex-col
+        overflow-hidden
+      "
+    >
+      {/* HEADER */}
+      {receiverProfile && (
+        <div
+          className="
+            shrink-0
+            sticky
+            top-0
+            z-20
+            bg-white/90
+            dark:bg-gray-900/90
+            backdrop-blur-xl
+            border-b
+            border-gray-200
+            dark:border-gray-800
+          "
+        >
+          <div
+            className="
+              max-w-3xl
+              mx-auto
+              px-4
+              py-3
+              flex
+              items-center
+              gap-4
+            "
+          >
+            <Link
+              to="/chatlist"
+              className="text-pink-500"
+            >
+              <ArrowLeft className="w-6 h-6" />
+            </Link>
+
+            <Link
+              to={`/profile/${receiverProfile.userId}`}
+              className="
+                flex
+                items-center
+                gap-3
+              "
+            >
+              <img
+                src={
+                  receiverProfile.profilePicUrl ||
+                  "/default-avatar.png"
+                }
+                alt="profile"
+                className="
+                  w-11
+                  h-11
+                  rounded-full
+                  object-cover
+                  border-2
+                  border-pink-500/40
+                "
+              />
+
+              <div>
+                <h2 className="font-semibold">
+                  {receiverProfile.username}
+                </h2>
+
+                <p
+                  className="
+                    text-xs
+                    text-gray-500
+                  "
+                >
+                  {receiverProfile.mbtiType}
+                </p>
+              </div>
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* MESSAGES */}
       <div
         className="
-          shrink-0
-          sticky
-          top-0
-          z-20
-          bg-white/90
-          dark:bg-gray-900/90
-          backdrop-blur-xl
-          border-b
-          border-gray-200
-          dark:border-gray-800
+          flex-1
+          overflow-y-auto
+          overscroll-contain
+          hide-scrollbar
+          px-4
+          pt-5
+          pb-3
         "
       >
         <div
           className="
             max-w-3xl
             mx-auto
-            px-4
-            py-3
-            flex
-            items-center
-            gap-4
+            space-y-3
           "
         >
-          <Link
-            to="/chatlist"
-            className="text-pink-500"
-          >
-            <ArrowLeft className="w-6 h-6" />
-          </Link>
-
-          <Link
-            to={`/profile/${receiverProfile.userId}`}
-            className="
-              flex
-              items-center
-              gap-3
-            "
-          >
-            <img
-              src={
-                receiverProfile.profilePicUrl ||
-                "/default-avatar.png"
-              }
-              alt="profile"
-              className="
-                w-11
-                h-11
-                rounded-full
-                object-cover
-                border-2
-                border-pink-500/40
-              "
-            />
-
-            <div>
-              <h2 className="font-semibold">
-                {receiverProfile.username}
-              </h2>
-
-              <p
-                className="
-                  text-xs
-                  text-gray-500
-                "
-              >
-                {receiverProfile.mbtiType}
-              </p>
-            </div>
-          </Link>
-        </div>
-      </div>
-    )}
-
-    {/* MESSAGES AREA */}
-    <div
-      className="
-        flex-1
-        overflow-y-auto
-        hide-scrollbar
-        px-4
-        py-5
-      "
-    >
-      <div
-        className="
-          max-w-3xl
-          mx-auto
-          space-y-3
-        "
-      >
-        {messages.map((msg) => (
-          <div
-            key={msg.$id}
-            className={`
-              flex
-              ${
-                msg.senderId === currentUserId
+          {messages.map((msg) => (
+            <div
+              key={msg.$id}
+              className={`flex ${
+                msg.senderId ===
+                currentUserId
                   ? "justify-end"
                   : "justify-start"
-              }
-            `}
-          >
-            <div
-              className={`
-                p-3
-                rounded-2xl
-                max-w-[75%]
-                break-words
-                shadow-lg
-
-                ${
-                  msg.senderId === currentUserId
-                    ? `
-                      bg-gradient-to-r
-                      from-pink-500
-                      to-violet-500
-                      text-white
-                    `
-                    : `
-                      bg-gray-200
-                      dark:bg-gray-800
-                    `
-                }
-              `}
+              }`}
             >
-              <p>{msg.messageText}</p>
-
               <div
-                className="
-                  flex
-                  justify-end
-                  mt-1
-                "
+                className={`
+                  p-3
+                  rounded-2xl
+                  max-w-[75%]
+                  break-words
+                  shadow-lg
+
+                  ${
+                    msg.senderId ===
+                    currentUserId
+                      ? `
+                        bg-gradient-to-r
+                        from-pink-500
+                        to-violet-500
+                        text-white
+                      `
+                      : `
+                        bg-gray-200
+                        dark:bg-gray-800
+                      `
+                  }
+                `}
               >
-                <p
+                <p>{msg.messageText}</p>
+
+                <div
                   className="
-                    text-[10px]
-                    opacity-70
+                    flex
+                    justify-end
+                    mt-1
                   "
                 >
-                  {new Date(
-                    msg.timestamp
-                  ).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </p>
+                  <p
+                    className="
+                      text-[10px]
+                      opacity-70
+                    "
+                  >
+                    {new Date(
+                      msg.timestamp
+                    ).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
 
-        {isOtherUserTyping && (
-          <p
-            className="
-              text-sm
-              text-gray-400
-              italic
-            "
-          >
-            typing...
-          </p>
-        )}
+          {isOtherUserTyping && (
+            <p
+              className="
+                text-sm
+                text-gray-400
+                italic
+              "
+            >
+              typing...
+            </p>
+          )}
 
-        <div ref={messagesEndRef} />
+          <div ref={messagesEndRef} />
+        </div>
       </div>
-    </div>
 
-    {/* INPUT */}
-    <div
-      className="
-        shrink-0
-        border-t
-        border-gray-200
-        dark:border-gray-800
-        bg-white/90
-        dark:bg-gray-900/90
-        backdrop-blur-xl
-      "
-    >
+      {/* INPUT */}
       <div
         className="
-          max-w-3xl
-          mx-auto
-          p-4
-          flex
-          gap-3
+          shrink-0
+          border-t
+          border-gray-200
+          dark:border-gray-800
+          bg-white/90
+          dark:bg-gray-900/90
+          backdrop-blur-xl
         "
       >
-        <input
-          type="text"
-          placeholder="Type your vibe..."
-          value={newMsg}
-          onChange={handleTyping}
-          onKeyDown={async (e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              await sendMessage();
-            }
-          }}
+        <div
           className="
-            flex-1
-            px-4
-            py-3
-            rounded-full
-            border
-            border-gray-300
-            dark:border-gray-700
-            bg-gray-100
-            dark:bg-gray-800
-            focus:outline-none
-            focus:ring-2
-            focus:ring-pink-500
-          "
-        />
-
-        <button
-          onClick={sendMessage}
-          className="
-            bg-gradient-to-r
-            from-pink-500
-            to-violet-500
-            text-white
+            max-w-3xl
+            mx-auto
             p-3
-            rounded-full
+            sm:p-4
+            pb-4
+            flex
+            gap-2
+            sm:gap-3
           "
         >
-          <SendHorizontal size={20} />
-        </button>
+          <input
+            type="text"
+            placeholder="Type your vibe..."
+            value={newMsg}
+            onChange={handleTyping}
+            onKeyDown={async (e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                await sendMessage();
+              }
+            }}
+            className="
+              flex-1
+              px-4
+              py-3
+              rounded-full
+              border
+              border-gray-300
+              dark:border-gray-700
+              bg-gray-100
+              dark:bg-gray-800
+              focus:outline-none
+              focus:ring-2
+              focus:ring-pink-500
+            "
+          />
+
+          <button
+            onClick={sendMessage}
+            className="
+              shrink-0
+              bg-gradient-to-r
+              from-pink-500
+              to-violet-500
+              text-white
+              p-3
+              rounded-full
+            "
+          >
+            <SendHorizontal size={20} />
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default Chat;
