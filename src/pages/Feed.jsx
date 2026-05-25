@@ -4,8 +4,8 @@ import VibeCard from "../components/VibeCard";
 import { Query, ID } from "appwrite";
 import { useUser } from "../hooks/useUser";
 import Stories from "../components/Stories";
-import { createLikeNotification } from "../lib/notifications";
-import { createCommentNotification } from "../lib/notifications";
+import { createLikeNotification, createCommentNotification } from "../lib/notifications";
+import { ChevronDown } from "lucide-react";
 
 const Feed = () => {
   const [vibes, setVibes] = useState([]);
@@ -16,16 +16,17 @@ const Feed = () => {
   const [showComments, setShowComments] = useState({});
   const [userProfilesMap, setUserProfilesMap] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const [filter, setFilter] = useState("same-mbti");
+  const [filter, setFilter] = useState("all");
+  const [openFilter, setOpenFilter] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
 
- const auth = useUser() || {};
+  const auth = useUser() || {};
+  const user = auth.user;
+  const userId = auth.userId;
+  const loading = auth.loading;
 
-const user = auth.user;
-const userId = auth.userId;
-const loading = auth.loading;
   // =========================
-  // CREATE PROFILE IF MISSING
+  // CREATE PROFILE
   // =========================
   const ensureUserProfile = async (currentUser) => {
     try {
@@ -51,7 +52,7 @@ const loading = auth.loading;
         );
       }
     } catch (err) {
-      console.error("Profile creation failed:", err);
+      console.error(err);
     }
   };
 
@@ -72,48 +73,71 @@ const loading = auth.loading;
       });
 
       setUserProfilesMap(userMap);
+
+      return userMap;
     } catch (err) {
-      console.error("Failed to fetch profiles:", err);
+      console.error(err);
+      return {};
     }
   };
 
   // =========================
   // FETCH VIBES
   // =========================
-  const fetchVibes = async () => {
-    try {
-      setIsLoading(true);
+  const fetchVibes = async (profiles) => {
+  try {
+    setIsLoading(true);
 
-      const response = await databases.listDocuments(
-        import.meta.env.VITE_APPWRITE_DATABASE_ID,
-        import.meta.env.VITE_APPWRITE_COLLECTION_ID,
-        [Query.orderDesc("$createdAt")]
-      );
+    const response = await databases.listDocuments(
+      import.meta.env.VITE_APPWRITE_DATABASE_ID,
+      import.meta.env.VITE_APPWRITE_COLLECTION_ID,
+      [Query.orderDesc("$createdAt")]
+    );
 
-      let vibesData = response.documents;
+    let vibesData = response.documents;
 
-      const currentUserProfile = userProfilesMap?.[userId];
+    // current user profile
+    const currentUserProfile = profiles?.[currentUserId];
 
-      if (
-        filter === "same-mbti" &&
-        currentUserProfile?.mbtiType
-      ) {
-        const currentMBTI = currentUserProfile.mbtiType;
+    // =========================
+    // TRIBE FILTER
+    // =========================
+    if (
+      filter === "same-mbti" &&
+      currentUserProfile &&
+      currentUserProfile.mbtiType &&
+      currentUserProfile.mbtiType.trim() !== ""
+    ) {
+      const currentMBTI =
+        currentUserProfile.mbtiType.trim().toLowerCase();
 
-        vibesData = vibesData.filter((vibe) => {
-          const authorProfile = userProfilesMap[vibe.userId];
+      vibesData = vibesData.filter((vibe) => {
+        const authorProfile =
+          profiles?.[vibe.userId];
 
-          return authorProfile?.mbtiType === currentMBTI;
-        });
-      }
+        if (
+          !authorProfile ||
+          !authorProfile.mbtiType
+        ) {
+          return false;
+        }
 
-      setVibes(vibesData);
-    } catch (err) {
-      console.error("Failed to fetch vibes:", err);
-    } finally {
-      setIsLoading(false);
+        return (
+          authorProfile.mbtiType
+            .trim()
+            .toLowerCase() === currentMBTI
+        );
+      });
     }
-  };
+
+    setVibes(vibesData);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   // =========================
   // FETCH COMMENTS
@@ -127,9 +151,7 @@ const loading = auth.loading;
 
       const grouped = res.documents.reduce(
         (acc, comment) => {
-          if (!acc.map[comment.vibeId]) {
-            acc.map[comment.vibeId] = [];
-          }
+          if (!acc.map[comment.vibeId]) acc.map[comment.vibeId] = [];
 
           acc.map[comment.vibeId].push(comment);
 
@@ -138,10 +160,7 @@ const loading = auth.loading;
 
           return acc;
         },
-        {
-          map: {},
-          counts: {},
-        }
+        { map: {}, counts: {} }
       );
 
       setCommentsMap(grouped.map);
@@ -149,18 +168,16 @@ const loading = auth.loading;
 
       await fetchCommentUserProfiles(res.documents);
     } catch (err) {
-      console.error("Failed to fetch comments:", err);
+      console.error(err);
     }
   };
 
   // =========================
-  // FETCH COMMENT USER PROFILES
+  // FETCH COMMENT USERS
   // =========================
   const fetchCommentUserProfiles = async (comments) => {
     try {
-      const uniqueUserIds = [
-        ...new Set(comments.map((c) => c.userId)),
-      ];
+      const uniqueUserIds = [...new Set(comments.map((c) => c.userId))];
 
       const profiles = {};
 
@@ -178,7 +195,7 @@ const loading = auth.loading;
 
       setCommentUserProfilesMap(profiles);
     } catch (err) {
-      console.error("Failed comment profile fetch:", err);
+      console.error(err);
     }
   };
 
@@ -194,18 +211,12 @@ const loading = auth.loading;
         : [];
 
       const currentLikes =
-        typeof vibe?.likes === "number"
-          ? vibe.likes
-          : 0;
+        typeof vibe?.likes === "number" ? vibe.likes : 0;
 
-      const hasLiked = likedByList.includes(
-        currentUser.$id
-      );
+      const hasLiked = likedByList.includes(currentUser.$id);
 
       const updatedLikedBy = hasLiked
-        ? likedByList.filter(
-            (id) => id !== currentUser.$id
-          )
+        ? likedByList.filter((id) => id !== currentUser.$id)
         : [...likedByList, currentUser.$id];
 
       const updatedLikes = hasLiked
@@ -224,9 +235,7 @@ const loading = auth.loading;
 
       setVibes((prev) =>
         prev.map((v) =>
-          v.$id === vibe.$id
-            ? { ...v, ...updated }
-            : v
+          v.$id === vibe.$id ? { ...v, ...updated } : v
         )
       );
 
@@ -238,7 +247,7 @@ const loading = auth.loading;
         );
       }
     } catch (err) {
-      console.error("Like failed:", err);
+      console.error(err);
     }
   };
 
@@ -252,10 +261,7 @@ const loading = auth.loading;
     }));
   };
 
-  const handleCommentSubmit = async (
-    e,
-    vibeId
-  ) => {
+  const handleCommentSubmit = async (e, vibeId) => {
     e.preventDefault();
 
     try {
@@ -284,9 +290,7 @@ const loading = auth.loading;
 
       await fetchComments();
 
-      const vibe = vibes.find(
-        (v) => v.$id === vibeId
-      );
+      const vibe = vibes.find((v) => v.$id === vibeId);
 
       if (vibe) {
         await createCommentNotification(
@@ -296,31 +300,29 @@ const loading = auth.loading;
         );
       }
     } catch (err) {
-      console.error("Comment failed:", err);
+      console.error(err);
     }
   };
 
   // =========================
-  // INITIAL LOAD
+  // INITIALIZE
   // =========================
   useEffect(() => {
     const initializeFeed = async () => {
       try {
-        console.log("Feed Rendered");
-console.log(vibes);
-console.log(userProfilesMap);
         const currentUser = await account.get();
 
         setCurrentUserId(currentUser.$id);
 
         await ensureUserProfile(currentUser);
 
-        await fetchUserProfiles();
+        const profiles = await fetchUserProfiles();
+
+        await fetchVibes(profiles);
+
+        await fetchComments();
       } catch (err) {
-        console.error(
-          "Initialization failed:",
-          err
-        );
+        console.error(err);
       }
     };
 
@@ -328,75 +330,100 @@ console.log(userProfilesMap);
   }, []);
 
   // =========================
+  // FILTER CHANGE
+  // =========================
+  useEffect(() => {
+    if (
+      Object.keys(userProfilesMap).length > 0 &&
+      currentUserId
+    ) {
+      fetchVibes(userProfilesMap);
+    }
+  }, [filter]);
+
+  // =========================
   // REALTIME COMMENTS
   // =========================
   useEffect(() => {
     const unsubscribe = client.subscribe(
       `databases.${import.meta.env.VITE_APPWRITE_DATABASE_ID}.collections.${import.meta.env.VITE_APPWRITE_COMMENTS_COLLECTION_ID}.documents`,
-      () => {
-        fetchComments();
-      }
+      () => fetchComments()
     );
 
     return () => unsubscribe();
   }, []);
 
   // =========================
-  // FETCH DATA
-  // =========================
-  useEffect(() => {
-    if (
-      !loading &&
-      user &&
-      currentUserId
-    ) {
-      fetchVibes();
-      fetchComments();
-    }
-  }, [
-    loading,
-    user,
-    currentUserId,
-    filter,
-  ]);
-
-  // =========================
-  // REFETCH VIBES AFTER PROFILES LOAD
-  // =========================
-  useEffect(() => {
-    if (
-      Object.keys(userProfilesMap).length > 0
-    ) {
-      fetchVibes();
-    }
-  }, [userProfilesMap]);
-
-  // =========================
   // LOADING
   // =========================
   if (loading || isLoading) {
-    return (
-      <div className="min-h-screen bg-[#0b1120] flex items-center justify-center text-white">
-        Loading Vibes...
+  return (
+    <div className="min-h-screen bg-[#0b1120] px-4 py-5">
+      <div className="max-w-3xl mx-auto space-y-6 animate-pulse">
+
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="space-y-3">
+            <div className="h-8 w-40 rounded-xl bg-white/10" />
+            <div className="h-4 w-52 rounded-lg bg-white/5" />
+          </div>
+
+          <div className="h-10 w-28 rounded-xl bg-white/10" />
+        </div>
+
+        {/* Stories */}
+        <div className="flex gap-3 overflow-hidden">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="flex flex-col items-center gap-2">
+              <div className="w-16 h-16 rounded-full bg-white/10" />
+              <div className="h-3 w-12 rounded bg-white/5" />
+            </div>
+          ))}
+        </div>
+
+        {/* Vibes */}
+        {[...Array(3)].map((_, i) => (
+          <div
+            key={i}
+            className="rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-2xl p-5 space-y-4"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-full bg-white/10" />
+
+              <div className="space-y-2">
+                <div className="h-4 w-28 rounded bg-white/10" />
+                <div className="h-3 w-20 rounded bg-white/5" />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="h-4 w-full rounded bg-white/5" />
+              <div className="h-4 w-[90%] rounded bg-white/5" />
+              <div className="h-4 w-[60%] rounded bg-white/5" />
+            </div>
+
+            <div className="h-64 rounded-2xl bg-white/5" />
+
+            <div className="flex gap-4">
+              <div className="h-10 w-20 rounded-xl bg-white/10" />
+              <div className="h-10 w-20 rounded-xl bg-white/10" />
+            </div>
+          </div>
+        ))}
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#0b1120] text-white">
-      
-      {/* Glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-120px] left-[-80px] w-[300px] h-[300px] bg-pink-500/20 blur-3xl rounded-full" />
-
         <div className="absolute bottom-[-120px] right-[-80px] w-[320px] h-[320px] bg-violet-500/20 blur-3xl rounded-full" />
       </div>
 
       <div className="relative z-10 max-w-3xl mx-auto px-4 py-5">
-
-        {/* Header */}
-        <div className="flex items-center justify-between mb-5">
-
+        <div className="flex items-center justify-between mb-5 gap-3">
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-500 via-violet-400 to-cyan-400 bg-clip-text text-transparent">
               VibeSoul
@@ -407,39 +434,67 @@ console.log(userProfilesMap);
             </p>
           </div>
 
-          <select
-            value={filter}
-            onChange={(e) =>
-              setFilter(e.target.value)
-            }
-            className="px-4 py-2 rounded-2xl bg-white/[0.06] border border-white/10"
-          >
-            <option
-              value="all"
-              className="bg-black"
+          <div className="relative w-fit">
+            <button
+              type="button"
+              onClick={() => setOpenFilter((prev) => !prev)}
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl bg-white/[0.06] border border-white/10 backdrop-blur-xl text-xs sm:text-sm hover:bg-white/[0.09] hover:border-pink-500/30 transition-all duration-300"
             >
-              All Vibes
-            </option>
+              <span>
+                {filter === "all"
+                  ? "🌍 Explore"
+                  : "💞 Tribe"}
+              </span>
 
-            <option
-              value="same-mbti"
-              className="bg-black"
-            >
-              Soul Vibes
-            </option>
-          </select>
+              <ChevronDown
+                size={16}
+                className={`transition-transform duration-300 ${
+                  openFilter ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+
+            {openFilter && (
+              <div className="absolute top-full right-0 mt-2 w-40 overflow-hidden rounded-2xl bg-[#111827]/95 backdrop-blur-2xl border border-white/10 shadow-2xl z-50">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFilter("all");
+                    setOpenFilter(false);
+                  }}
+                  className={`w-full text-left px-4 py-3 text-sm transition-all hover:bg-pink-500/20 ${
+                    filter === "all" ? "bg-white/10" : ""
+                  }`}
+                >
+                  🌍 Explore
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFilter("same-mbti");
+                    setOpenFilter(false);
+                  }}
+                  className={`w-full text-left px-4 py-3 text-sm transition-all hover:bg-pink-500/20 ${
+                    filter === "same-mbti"
+                      ? "bg-white/10"
+                      : ""
+                  }`}
+                >
+                  💞 Tribe
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Stories */}
         <div className="mb-6 rounded-3xl border border-white/10 bg-white/[0.04] backdrop-blur-2xl p-2">
           <Stories currentUser={user} />
         </div>
 
-        {/* Feed */}
         <div className="space-y-6">
           {vibes.length > 0 ? (
             vibes.map((vibe) => (
-              
               <VibeCard
                 key={vibe.$id}
                 vibe={vibe}
@@ -449,30 +504,13 @@ console.log(userProfilesMap);
                 showComments={showComments}
                 handleLike={handleLike}
                 handleCommentSubmit={(e) =>
-                  handleCommentSubmit(
-                    e,
-                    vibe.$id
-                  )
+                  handleCommentSubmit(e, vibe.$id)
                 }
-                handleCommentChange={
-                  handleCommentChange
-                }
-                setShowComments={
-                  setShowComments
-                }
-                commentCount={
-                  commentsCountMap[
-                    vibe.$id
-                  ] || 0
-                }
-                commentUserProfilesMap={
-                  commentUserProfilesMap
-                }
-                userProfile={
-                  userProfilesMap[
-                    vibe.userId
-                  ]
-                }
+                handleCommentChange={handleCommentChange}
+                setShowComments={setShowComments}
+                commentCount={commentsCountMap[vibe.$id] || 0}
+                commentUserProfilesMap={commentUserProfilesMap}
+                userProfile={userProfilesMap[vibe.userId]}
               />
             ))
           ) : (
@@ -482,8 +520,7 @@ console.log(userProfilesMap);
               </h2>
 
               <p className="text-gray-400 mt-2 max-w-sm">
-                Follow more souls or post your
-                first vibe ✨
+                Follow more souls or post your first vibe ✨
               </p>
             </div>
           )}
